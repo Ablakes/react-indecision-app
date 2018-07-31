@@ -11,6 +11,33 @@ class Indecision extends React.Component {
     };
   }
 
+  //When the component mounts, get the data out of local storage:
+  componentDidMount() {
+    //This try catch function makes sure our data is good before loading the app
+    try {
+      let json = localStorage.getItem("options");
+      let options = JSON.parse(json);
+      if (options) {
+        //Only sets state if options exist - this saves memory
+        this.setState(() => ({ options }));
+        // This function is shorthand for return {options: options}
+        // We can do that because we're returning a single key with a value with the same name
+      }
+    } catch (e) {
+      // Do nothing
+    }
+  }
+
+  //When a change is made, update the data in local storage
+  componentDidUpdate(prevData, prevState) {
+    if (prevState.options.length !== this.state.options.length) {
+      //Check to make sure the state has changed - this saves memory
+      const json = JSON.stringify(this.state.options);
+      localStorage.setItem("options", json);
+      console.log("saving data");
+    }
+  }
+
   handleDeleteOptions() {
     this.setState(() => ({ options: [] }));
   }
@@ -107,7 +134,15 @@ const Option = function(props) {
 const Options = props => {
   return (
     <div>
-      <button onClick={props.handleDeleteOptions}> Remove All </button>{" "}
+      <button
+        onClick={props.handleDeleteOptions}
+        disabled={props.options.length === 0}
+      >
+        Remove All
+      </button>
+      {props.options.length === 0 && (
+        <p>Please enter an option to get started</p>
+      )}
       {/* no idea why thse brackets {" "} keep showing up */}
       <p> These are your options </p>
       {props.options.map(option => (
@@ -132,11 +167,14 @@ class AddOption extends React.Component {
   handleAddOption(e) {
     e.preventDefault();
     const option = e.target.elements.option.value.trim(); //how we access the input value in the event object. trim() removes empty spaces
-    e.target.elements.option.value = "";
-    //clears the input field on submit
     const error = this.props.handleAddOption(option);
     //the only thing that can be returned from handleAddOption in Indecision is an error, otherwise the state will be updated when this const err runs handleAddOption
     this.setState(() => ({ error }));
+    //shorthand for return {options:error}  (I think)
+    if (!error) {
+      e.target.elements.option.value = "";
+      //clears the input field on submit(if no errors)
+    }
   }
 
   render() {
