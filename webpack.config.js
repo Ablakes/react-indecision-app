@@ -21,5 +21,11 @@ module.exports = {
         // exclude anything in the node_modules folder
       }
     ]
+  },
+  devtool: "cheap-module-eval-source-map",
+  //This will give us a better idea of where our errors in the console are coming from
+  //It also shows us where console.logs come from
+  devServer: {
+    contentBase: path.join(__dirname, "public")
   }
 };

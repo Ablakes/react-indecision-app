@@ -4,20 +4,61 @@ import AddOption from "./AddOption";
 import Options from "./Options";
 import Action from "./Action";
 import Header from "./Header";
+import OptionModal from "./OptionModal";
 
+// We can just write export default here when exporting a class
 export default class IndecisionApp extends React.Component {
-  // We can just write export default here when exporting a class
-  constructor(props) {
-    super(props);
-    this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
-    this.handleDeleteOption = this.handleDeleteOption.bind(this);
-    this.handlePick = this.handlePick.bind(this);
-    this.handleAddOption = this.handleAddOption.bind(this);
+  state = {
+    options: [],
+    selectedOption: undefined
+  };
 
-    this.state = {
-      options: []
-    };
-  }
+  handleClearSelectedOption = () => {
+    this.setState(() => ({
+      selectedOption: undefined
+    }));
+  };
+
+  handleDeleteOptions = () => {
+    this.setState(() => ({ options: [] }));
+  };
+
+  handleDeleteOption = optionToRemove => {
+    this.setState(prevState => {
+      return {
+        options: prevState.options.filter(option => {
+          return optionToRemove !== option;
+          //if it's the same option it will return false and the optionToRemove is not included in the new array
+        })
+      };
+    });
+  };
+
+  handlePick = () => {
+    let randNum = Math.floor(Math.random() * this.state.options.length);
+    const option = this.state.options[randNum];
+    this.setState(() => {
+      return {
+        selectedOption: option
+        //The button was clicked and a random option was selected, so trigger the modal.
+        //the modal is triggered when isOpen will be set to true when the handlePick() button is clicked.
+      };
+    });
+  };
+
+  handleAddOption = option => {
+    if (!option) {
+      return "enter valid option";
+    } else if (this.state.options.indexOf(option) > -1) {
+      //this checks if there is already an instance of "option" in the options array
+      return "duplicate entry";
+    }
+    //Now this next line functions like an else clause
+    this.setState(prevState => ({
+      options: prevState.options.concat([option])
+      //we use concat() instead of push because it doesn't affect our original prevState.options array. Much like map() it returns a new array without messing with the old array.
+    }));
+  };
 
   //When the component mounts, get the data out of local storage:
   componentDidMount() {
@@ -45,40 +86,6 @@ export default class IndecisionApp extends React.Component {
     }
   }
 
-  handleDeleteOptions() {
-    this.setState(() => ({ options: [] }));
-  }
-
-  handleDeleteOption(optionToRemove) {
-    this.setState(prevState => {
-      return {
-        options: prevState.options.filter(option => {
-          return optionToRemove !== option;
-          //if it's the same option it will return false and the optionToRemove is not included in the new array
-        })
-      };
-    });
-  }
-
-  handlePick() {
-    let randNum = Math.floor(Math.random() * this.state.options.length);
-    alert(this.state.options[randNum]);
-  }
-
-  handleAddOption(option) {
-    if (!option) {
-      return "enter valid option";
-    } else if (this.state.options.indexOf(option) > -1) {
-      //this checks if there is already an instance of "option" in the options array
-      return "duplicate entry";
-    }
-    //Now this next line functions like an else clause
-    this.setState(prevState => ({
-      options: prevState.options.concat([option])
-      //we use concat() instead of push because it doesn't affect our original prevState.options array. Much like map() it returns a new array without messing with the old array.
-    }));
-  }
-
   render() {
     const subtitle = "Put your life in the hands of a computer";
     return (
@@ -95,6 +102,10 @@ export default class IndecisionApp extends React.Component {
           handleDeleteOption={this.handleDeleteOption}
         />
         <AddOption handleAddOption={this.handleAddOption} />
+        <OptionModal
+          selectedOption={this.state.selectedOption}
+          handleClearSelectedOption={this.handleClearSelectedOption}
+        />
       </div>
     );
   }
