@@ -10,13 +10,15 @@ import OptionModal from "./OptionModal";
 export default class IndecisionApp extends React.Component {
   state = {
     options: [],
-    selectedOption: undefined
+    selectedOption: undefined,
+    modalOpen: false
   };
 
   handleClearSelectedOption = () => {
     this.setState(() => ({
-      selectedOption: undefined
+      modalOpen: false
     }));
+    setTimeout(() => this.setState(() => ({ selectedOption: undefined })), 200);
   };
 
   handleDeleteOptions = () => {
@@ -39,7 +41,8 @@ export default class IndecisionApp extends React.Component {
     const option = this.state.options[randNum];
     this.setState(() => {
       return {
-        selectedOption: option
+        selectedOption: option,
+        modalOpen: true
         //The button was clicked and a random option was selected, so trigger the modal.
         //the modal is triggered when isOpen will be set to true when the handlePick() button is clicked.
       };
@@ -48,10 +51,10 @@ export default class IndecisionApp extends React.Component {
 
   handleAddOption = option => {
     if (!option) {
-      return "enter valid option";
+      return "Enter Valid Option";
     } else if (this.state.options.indexOf(option) > -1) {
       //this checks if there is already an instance of "option" in the options array
-      return "duplicate entry";
+      return "Duplicate Entry";
     }
     //Now this next line functions like an else clause
     this.setState(prevState => ({
@@ -91,21 +94,26 @@ export default class IndecisionApp extends React.Component {
     return (
       <div>
         <Header subtitle={subtitle} />
-        <Action
-          hasOptions={this.state.options.length > 0}
-          handlePick={this.handlePick}
-          //These values are "props" in the respective component
-        />
-        <Options
-          options={this.state.options}
-          handleDeleteOptions={this.handleDeleteOptions}
-          handleDeleteOption={this.handleDeleteOption}
-        />
-        <AddOption handleAddOption={this.handleAddOption} />
-        <OptionModal
-          selectedOption={this.state.selectedOption}
-          handleClearSelectedOption={this.handleClearSelectedOption}
-        />
+        <div className="container">
+          <Action
+            hasOptions={this.state.options.length > 0}
+            handlePick={this.handlePick}
+            //These values are "props" in the respective component
+          />
+          <div className="widget">
+            <Options
+              options={this.state.options}
+              handleDeleteOptions={this.handleDeleteOptions}
+              handleDeleteOption={this.handleDeleteOption}
+            />
+            <AddOption handleAddOption={this.handleAddOption} />
+          </div>
+          <OptionModal
+            modalOpen={this.state.modalOpen}
+            selectedOption={this.state.selectedOption}
+            handleClearSelectedOption={this.handleClearSelectedOption}
+          />
+        </div>
       </div>
     );
   }

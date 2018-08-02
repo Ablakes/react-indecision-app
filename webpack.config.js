@@ -10,8 +10,7 @@ module.exports = {
     filename: "bundle.js"
   },
   module: {
-    rules: [
-      {
+    rules: [{
         loader: "babel-loader",
         //run babel-loader on all files that meet the test condition:
         test: /\.js$/,
@@ -19,6 +18,15 @@ module.exports = {
         // the . has to be escaped with a \ before it
         exclude: /node_modules/
         // exclude anything in the node_modules folder
+      },
+      {
+        test: /\.s?css$/,
+        //the question mark allows this rule to apply to both css and scss (the s is optional)
+        use: [
+          "style-loader",
+          "css-loader",
+          "sass-loader"
+        ]
       }
     ]
   },

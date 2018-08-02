@@ -1,0 +1,10 @@
+html {
+    font-size: 62.5%;
+    //this makes our rem base 10px instead of 16px
+  }
+  
+  body {
+    background-color: $dark-blue;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.6rem;
+  }

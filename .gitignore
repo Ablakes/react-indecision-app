@@ -68,3 +68,5 @@ typings/
 
 playground/
 pre-transform-class-properties/
+
+.vscode
